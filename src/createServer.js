@@ -70,7 +70,37 @@ function createServer() {
     'note',
   ];
 
-  app.get('/expenses', (req, res) => res.json(data2));
+  app.get('/expenses', (req, res) => {
+    const { userId, from, to, categories } = req.query;
+
+    let filteredExpenses = data2;
+
+    if (userId) {
+      filteredExpenses = filteredExpenses.filter(
+        (expense) => expense.userId === Number(userId),
+      );
+    }
+
+    if (categories) {
+      filteredExpenses = filteredExpenses.filter(
+        (expense) =>
+          expense.category.toLowerCase() === categories.toLowerCase(),
+      );
+    }
+
+    if (from && to) {
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+
+      filteredExpenses = filteredExpenses.filter((expense) => {
+        const spentAtDate = new Date(expense.spentAt);
+
+        return spentAtDate >= fromDate && spentAtDate <= toDate;
+      });
+    }
+
+    return res.json(filteredExpenses);
+  });
 
   app.post('/expenses', (req, res) => {
     const hasAllFields = requestProperties.every((property) => {
