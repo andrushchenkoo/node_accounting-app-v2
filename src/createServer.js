@@ -77,7 +77,9 @@ function createServer() {
       return req.body.hasOwnProperty(property);
     });
 
-    const isUserExist = data.some((user) => user.id === req.body.userId);
+    const isUserExist = data.some(
+      (user) => user.id === Number(req.body.userId),
+    );
 
     if (!hasAllFields || !isUserExist) {
       return res
